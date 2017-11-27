@@ -1,0 +1,25 @@
+#!/usr/bin/env groovy
+
+// DESCRIPTION:
+// WORK IN PROGRESS!
+// Pipeline version of node-test-commit, that takes a custom config option.
+// TODO(gib): Implement rebasing, certify safe, post_status_to_pr.
+
+properties([
+  parameters([
+    string(name: 'GITHUB_ORG', defaultValue: '', description: 'The user/org of the GitHub repo'),
+    string(name: 'REPO_NAME', defaultValue: '', description: 'The name of the repo'),
+    string(name: 'GIT_REMOTE_REF', defaultValue: '', description: 'The remote portion of the Git refspec to fetch and test'),
+    string(name: 'CONFIG_FLAGS', defaultValue: '', description: 'Extra config flags to pass to configure script.'),
+    // string(name: 'REBASE_ONTO', defaultValue: '', description: 'Optionally, rebase onto the given ref before testing. Leave blank to skip rebasing. Prefix branch names with "origin/" (without the quotes).'),
+    booleanParam(name: 'IGNORE_FLAKY_TESTS', defaultValue: true, description: 'Mark the build as unstable instead of failure if only flaky tests fail'),
+  ]),
+])
+
+if (!params['GIT_REMOTE_REF']) {
+  error("GIT_REMOTE_REF not defined.")
+}
+
+stage('Build Node') {
+  build(job: 'node-test-commit-linux')
+}
